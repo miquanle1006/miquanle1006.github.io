@@ -6,27 +6,38 @@ on:
     branches:
       - main # Set the branch you want to deploy from
 
+#Creates a job named "deploy" that runs on the latest Ubuntu virtual machine.
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Downloads your repository's code to the virtual machine so the workflow can access it.
       - name: checkout code # Checkout repository
         uses: actions/checkout@v3
 
+      # Installs Node.js version 18 on the virtual machine (required to run npm commands).
       - name: setup node # Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "18" # Specify the Node.js version
 
+      # Runs npm install to download all packages listed in your package.json.
       - name: install dependencies # Install dependencies
         run: npm install
 
+      # Runs npm run build to create a production build of your React + Vite project. Dist folder will be created after this step.
       - name: build project # Build project
         run: npm run build
 
+      # Uses the peaceiris/actions-gh-pages action to deploy the contents of the dist folder to the gh-pages branch.
       - name: deploy to gh-pages # Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
+          # github_token: Uses GitHub's built-in token for authentication
+          # publish_dir: ./dist: Tells it to deploy the contents of the dist folder
+          # publish_branch: gh-pages: Creates/updates a gh-pages branch with your built files
+          # user_name/user_email: Sets the commit author as GitHub Actions bot
+          # commit_message: The message for the deployment commit
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           # Set the branch you want to deploy to (usually 'gh-pages')
@@ -36,3 +47,5 @@ jobs:
           user_email: "github-actions[bot]@users.noreply.github.com"
           # Optional: Set a custom commit message
           commit_message: "Deploy to GitHub Pages"
+
+# The workflow essentially automates: checkout → install → build → deploy, running every time you push to main or when manually triggered.

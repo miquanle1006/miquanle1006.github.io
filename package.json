@@ -10,6 +10,7 @@
       "react-dom": "$react-dom"
     }
   },
+  
   "scripts": {
     "dev": "vite",
     "build": "vite build",
